@@ -2,6 +2,8 @@ import { Server, Socket } from 'socket.io'
 import http from 'http'
 import { v4 as uuidv4 } from 'uuid'
 import { CHAT } from '../database/DB'
+import { randomNameGenerate } from '../utils/randomChatName'
+import { CONNECTEDCLIENT } from '../database/connectedClients'
 
 interface Message {
     text: string
@@ -10,6 +12,8 @@ interface Message {
     id: string
 }
 
+const connectedClientsMap = new Map<string, string>()
+
 export const configureChat = (server: http.Server) => {
     const ioChat = new Server(server, {
         path: '/chat',
@@ -17,18 +21,50 @@ export const configureChat = (server: http.Server) => {
     })
 
     ioChat.on('connection', (socket: Socket) => {
-        console.log('Usuário conectado!', socket.id)
+        const user = randomNameGenerate()
 
-        socket.on('disconnect', (reason: string) => {
-            console.log('Usuário desconectado!', socket.id)
+        // adicionar usuário a lista de clientes ativos
+        addUser(user, socket.id)
+
+        // console.log(CONNECTEDCLIENT)
+
+        // ao desconectar o usuário
+        socket.on('disconnect', () => {
+            console.log('Usuário desconectado!', user)
+            const users = CONNECTEDCLIENT.findIndex((users) => users.authorId === socket.id)
+
+            CONNECTEDCLIENT.splice(users, 1)
         })
 
-        socket.on('set_username', (username: string) => {
-            socket.data.username = username
+        // Manipulador de eventos para a reconexão
+        socket.on('reconnect', (attemptNumber: number) => {
+            console.log(`Cliente reconectado após ${attemptNumber} tentativas.`)
+
+            // Verifique se o cliente está se reconectando
+            if (connectedClientsMap.has(socket.id)) {
+                const chatName = connectedClientsMap.get(socket.id)
+
+                // Envie o nome de chat ao cliente
+                socket.emit('chat_name', chatName)
+            }
+
+            // Você pode adicionar aqui qualquer lógica adicional que desejar após a reconexão bem-sucedida.
         })
 
-        socket.on('create_message', (data: { text: string }) => {
-            if (!socket.data.username) {
+        // retorna para o usuário o nome dele
+        socket.on('user_name', () => {
+            socket.emit('chat_name', user)
+        })
+
+        // retorna pro usuário a lista de clientes conectados
+        socket.on('chat_clients', () => {
+            socket.emit('connected_clients', CONNECTEDCLIENT)
+        })
+
+        // ao criar uma mensagem
+        socket.on('create_message', (data: { text: string; author: string }) => {
+            // fazer verificações separadas
+            if (!data.author) {
                 console.error('Erro: Nome de usuário não definido para o socket.')
                 return
             }
@@ -39,7 +75,7 @@ export const configureChat = (server: http.Server) => {
             const message: Message = {
                 text: data.text,
                 authorId: socket.id,
-                author: socket.data.username,
+                author: data.author,
                 id: messageId, // Adicionamos o ID único aqui
             }
 
@@ -48,12 +84,16 @@ export const configureChat = (server: http.Server) => {
             ioChat.emit('receive_message', message)
         })
 
+        // retorna pro usuário as mensagens do bd
         socket.on('get_messages', () => {
             socket.emit('all_messages', CHAT)
         })
 
-        socket.on('update_message', (data: { messageId: string; newText: string }) => {
-            if (!socket.data.username) {
+        // editar mensagem
+        socket.on('update_message', (data: { messageId: string; newText: string; author: string }) => {
+            console.log(data.author)
+
+            if (!data.author) {
                 console.error('Erro: Nome de usuário não definido para o socket.')
                 return
             }
@@ -73,13 +113,16 @@ export const configureChat = (server: http.Server) => {
             ioChat.emit('message_updated', updatedMessage)
         })
 
-        socket.on('delete_message', (messageId: string) => {
-            if (!socket.data.username) {
+        //deletar uma mensagem
+        socket.on('delete_message', (data: { messageId: string; author: string }) => {
+            if (!data.author) {
                 console.error('Erro: Nome de usuário não definido para o socket.')
                 return
             }
 
-            const messageIndex = CHAT.findIndex((message) => message.authorId === socket.id && message.id === messageId)
+            const messageIndex = CHAT.findIndex(
+                (message) => message.authorId === socket.id && message.id === data.messageId
+            )
 
             if (messageIndex === -1) {
                 console.error('Erro: Mensagem não encontrada ou você não tem permissão para excluí-la.')
@@ -93,4 +136,16 @@ export const configureChat = (server: http.Server) => {
     })
 
     return ioChat
+}
+
+function addUser(user: string, id: string) {
+    console.log('Usuário conectado!', user, id)
+
+    const adduser = {
+        authorId: id,
+        author: user,
+        status: 0,
+    }
+
+    CONNECTEDCLIENT.push(adduser)
 }
