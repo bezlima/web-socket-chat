@@ -1,5 +1,4 @@
-import { Server, Socket } from 'socket.io'
-import http from 'http'
+import { Socket } from 'socket.io'
 import { CHAT } from '../database/DB'
 import { randomNameGenerate } from '../utils/randomChatName'
 import { CONNECTEDCLIENT } from '../database/connectedClients'
@@ -9,12 +8,7 @@ import { updateMessage } from './events/updateMessage'
 import { deleteMessage } from './events/deleteMessage'
 import { connectAuthor } from './events/connectAuthor'
 
-export const configureChat = (server: http.Server) => {
-    const ioChat = new Server(server, {
-        path: '/chat',
-        cors: { origin: 'http://localhost:3000' },
-    })
-
+export const configureChat = (ioChat: any) => {
     ioChat.on('connection', (socket: Socket) => {
         const authorName = randomNameGenerate()
 
