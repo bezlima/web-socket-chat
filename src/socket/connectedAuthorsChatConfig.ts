@@ -1,11 +1,11 @@
 import { Socket } from 'socket.io'
-import { CONNECTEDCLIENT } from '../database/connectedClients'
+import { CONNECTED_AUTHORS } from '../database/connectedAuthors'
 
 export const configureConnectedAuthors = (ioChat: any) => {
     ioChat.on('connection', (socket: Socket) => {
         // retorna pro usuário a lista de clientes conectados
         socket.on('chat_clients', () => {
-            socket.emit('connected_clients', CONNECTEDCLIENT)
+            socket.emit('connected_clients', CONNECTED_AUTHORS)
         })
     })
 

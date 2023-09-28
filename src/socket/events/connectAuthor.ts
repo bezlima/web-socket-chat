@@ -1,4 +1,4 @@
-import { CONNECTEDCLIENT } from '../../database/connectedClients'
+import { CONNECTED_AUTHORS } from '../../database/connectedAuthors'
 import { createServerMessage } from '../../utils/serverMessage'
 
 export function connectAuthor(authorName: string, id: string) {
@@ -8,6 +8,6 @@ export function connectAuthor(authorName: string, id: string) {
         status: 0,
     }
 
-    CONNECTEDCLIENT.push(newAuthor)
+    CONNECTED_AUTHORS.push(newAuthor)
     createServerMessage(`O ${authorName} entrou no chat`)
 }

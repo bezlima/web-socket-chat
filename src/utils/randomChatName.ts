@@ -1,4 +1,4 @@
-import { CONNECTEDCLIENT } from '../database/connectedClients'
+import { CONNECTED_AUTHORS } from '../database/connectedAuthors'
 import { ANIMALS, COLORS } from '../database/clientNames'
 
 export function randomNameGenerate(): string {
@@ -12,7 +12,7 @@ export function randomNameGenerate(): string {
         const randomColor: string = COLORS[randomColorNumber]
 
         randomName = `${randomAnimal} ${randomColor}`
-    } while (CONNECTEDCLIENT.some((cliente) => cliente.author === randomName))
+    } while (CONNECTED_AUTHORS.some((cliente) => cliente.author === randomName))
 
     return randomName
 }
