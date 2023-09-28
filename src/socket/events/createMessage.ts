@@ -7,6 +7,7 @@ interface IMessage {
     authorId: string
     author: string
     id: string
+    status: number
 }
 
 interface IData {
@@ -28,7 +29,8 @@ export function createMessage(socket: Socket, data: IData) {
         text: data.text,
         authorId: socket.id,
         author: data.author,
-        id: messageId, // Adicionamos o ID único aqui
+        id: messageId,
+        status: 0,
     }
 
     CHAT.push(message)

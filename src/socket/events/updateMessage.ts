@@ -20,6 +20,7 @@ export function updateMessage(socket: Socket, data: IData) {
     }
 
     CHAT[messageIndex].text = data.newText
+    CHAT[messageIndex].status = 1
     const updatedMessage = CHAT[messageIndex]
 
     return updatedMessage

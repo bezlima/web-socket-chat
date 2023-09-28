@@ -6,6 +6,7 @@ interface IMessage {
     authorId: string
     author: string
     id: string
+    status: 0
 }
 
 export function createServerMessage(text: string) {
@@ -16,6 +17,7 @@ export function createServerMessage(text: string) {
         authorId: '0000',
         author: 'SERVER',
         id: messageId,
+        status: 0,
     }
 
     CHAT.push(message)

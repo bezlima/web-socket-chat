@@ -19,6 +19,7 @@ export function deleteMessage(socket: Socket, data: IData) {
     }
 
     CHAT[messageIndex].text = 'Mensagem excluída pelo autor'
+    CHAT[messageIndex].status = 2
     const deletedMessage = CHAT[messageIndex]
 
     return deletedMessage
