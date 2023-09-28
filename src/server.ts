@@ -2,6 +2,8 @@ import http from 'http'
 import app from './app'
 import { configureChat } from './socket/globalChatConfig'
 import { Server } from 'socket.io'
+import { configureAuthor } from './socket/authorChatConfig'
+import { configureConnectedAuthors } from './socket/connectedAuthorsChatConfig'
 require('dotenv').config()
 
 const PORT = process.env.APP_PORT!
@@ -15,5 +17,7 @@ const ioChat = new Server(server, {
 
 server.listen(PORT, () => {
     configureChat(ioChat)
+    configureAuthor(ioChat)
+    configureConnectedAuthors(ioChat)
     console.log(`http://localhost:${PORT}/`)
 })
