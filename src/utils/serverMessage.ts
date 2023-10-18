@@ -21,4 +21,6 @@ export function createServerMessage(text: string) {
     }
 
     CHAT.push(message)
+
+    return message
 }
