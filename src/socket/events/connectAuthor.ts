@@ -1,5 +1,4 @@
 import { CONNECTED_AUTHORS } from '../../database/connectedAuthors'
-import { createServerMessage } from '../../utils/serverMessage'
 
 export function connectAuthor(authorName: string, id: string) {
     const newAuthor = {
@@ -9,5 +8,4 @@ export function connectAuthor(authorName: string, id: string) {
     }
 
     CONNECTED_AUTHORS.push(newAuthor)
-    createServerMessage(`O ${authorName} entrou no chat`)
 }
