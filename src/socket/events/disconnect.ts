@@ -1,5 +1,4 @@
 import { CONNECTED_AUTHORS } from '../../database/connectedAuthors'
-import { createServerMessage } from '../../utils/serverMessage'
 import { Socket } from 'socket.io'
 
 export function disconnect(socket: Socket, authorName: string) {

@@ -20,13 +20,21 @@ export const configureChat = (ioChat: any) => {
         // editar mensagem
         socket.on('update_message', (data: { messageId: string; newText: string; author: string }) => {
             const updatedMessage = updateMessage(socket, data)
-            ioChat.emit('message_updated', updatedMessage)
+            if (updatedMessage) {
+                ioChat.emit('message_updated', updatedMessage)
+            } else {
+                return
+            }
         })
 
         //deletar uma mensagem
         socket.on('delete_message', (data: { messageId: string; author: string }) => {
             const deletedMessage = deleteMessage(socket, data)
-            ioChat.emit('message_deleted', deletedMessage)
+            if (deletedMessage) {
+                ioChat.emit('message_deleted', deletedMessage)
+            } else {
+                return
+            }
         })
     })
 

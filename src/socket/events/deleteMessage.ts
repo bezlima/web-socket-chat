@@ -15,7 +15,7 @@ export function deleteMessage(socket: Socket, data: IData) {
 
     if (messageIndex === -1) {
         console.error('Erro: Mensagem não encontrada ou você não tem permissão para atualizá-la.')
-        return
+        return {}
     }
 
     CHAT[messageIndex].text = 'Mensagem excluída pelo autor'
