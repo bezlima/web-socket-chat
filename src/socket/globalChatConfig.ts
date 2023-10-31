@@ -14,7 +14,11 @@ export const configureChat = (ioChat: any) => {
         // ao criar uma mensagem
         socket.on('create_message', (data: { text: string; author: string }) => {
             const message = createMessage(socket, data)
-            ioChat.emit('receive_message', message)
+            if (message) {
+                ioChat.emit('receive_message', message)
+            } else {
+                return
+            }
         })
 
         // editar mensagem
